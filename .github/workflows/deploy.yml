@@ -37,9 +37,9 @@ jobs:
             --role-arn "arn:aws:iam::730335383329:role/Kubernetes" \
             --role-session-name github-actions-session)
 
-          echo "::set-output name=aws_access_key_id::$(echo $CREDS | jq -r '.Credentials.AccessKeyId')"
-          echo "::set-output name=aws_secret_access_key::$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')"
-          echo "::set-output name=aws_session_token::$(echo $CREDS | jq -r '.Credentials.SessionToken')"
+          echo "aws_access_key_id=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')" >> $GITHUB_ENV
+          echo "aws_secret_access_key=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')" >> $GITHUB_ENV
+          echo "aws_session_token=$(echo $CREDS | jq -r '.Credentials.SessionToken')" >> $GITHUB_ENV
 
   terraform-plan:
     runs-on: ubuntu-latest
@@ -82,9 +82,9 @@ jobs:
       - name: Configure assumed role credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ needs.terraform-plan.outputs.aws_access_key_id }}
-          aws-secret-access-key: ${{ needs.terraform-plan.outputs.aws_secret_access_key }}
-          aws-session-token: ${{ needs.terraform-plan.outputs.aws_session_token }}
+          aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: us-east-1
 
       - name: Setup Terraform
