@@ -22,7 +22,9 @@ jobs:
           aws-region: us-east-1  
 
       - name: Test AWS command
-        run: aws sts get-caller-identity
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls
 
       # Optional: Deploy to S3, EKS, etc.
       # - name: Upload to S3
