@@ -1,0 +1,46 @@
+{
+    "CST-dev-role": {
+        "role_name": "CST-dev-role",
+        "max_session_duration": "3600",
+        "assume_role_policy": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "ec2.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "managed_policies": [
+            {
+                "role_name": "CST-dev-role",
+                "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess",
+                "name": "CST-dev-role-AdministratorAccess"
+            }
+        ],
+        "inline_policies": [
+            {
+                "role_name": "CST-dev-role",
+                "policy_name": "CST-dev-role-EC2Policy",
+                "policy_document": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "ec2:Describe*",
+                                "ec2:StartInstances",
+                                "ec2:StopInstances"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        ]
+            
+    }
+}

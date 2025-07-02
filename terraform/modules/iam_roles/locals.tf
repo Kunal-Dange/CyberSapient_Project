@@ -1,4 +1,8 @@
 locals {
+    common_tags = {
+        Project     = "CyberSapient_Project"
+        Environment = "staging"
+    }
     roles =jsondecode(var.roles_json)
 
     inline_policies = flatten([
