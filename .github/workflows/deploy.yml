@@ -33,7 +33,7 @@ jobs:
       - name: Assume role and set outputs
         id: sts
         run: |
-          CREDS=$(aws sts sts \
+          CREDS=$(aws sts \
             --role-arn "arn:aws:iam::730335383329:role/Kubernetes" \
             --role-session-name github-actions-session)
 
