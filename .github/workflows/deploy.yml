@@ -54,7 +54,7 @@ jobs:
           aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
           aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
           aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
-          aws-region: ap-south-1
+          aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
