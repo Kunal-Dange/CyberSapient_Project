@@ -1,6 +1,55 @@
-module "roles" {
-  source = "./modules/iam_roles"
+module "iam_roles" {
+  source = "./terraform/modules/iam_roles"
 
-  roles_json = (file("${path.module}/roles.json"))
-  tags = local.common_tags
+  iam_roles = {
+    role1 = {
+      name                = "example-role"
+      assume_role_policy  = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+      description         = "Example IAM Role"
+      max_session_duration = 3600
+      tags = {
+        Environment = "Dev"
+      }
+    }
+  }
+
+  iam_role_policies = {
+    policy1 = {
+      name      = "example-policy"
+      role_name = "example-role"
+      policy    = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+    }
+  }
+
+  managed_policies = {
+    attachment1 = {
+      name      = "example-attachment"
+      role_name = "example-role"
+      policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    }
+  }
 }
