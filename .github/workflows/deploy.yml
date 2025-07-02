@@ -53,13 +53,18 @@ jobs:
           aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: ap-south-1
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform
+        working-directory: .
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        working-directory: terraform
+        working-directory: .
 
   terraform_apply:
     needs: sts
