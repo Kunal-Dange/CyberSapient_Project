@@ -45,6 +45,9 @@ jobs:
     needs: sts
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Configure assumed role credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
