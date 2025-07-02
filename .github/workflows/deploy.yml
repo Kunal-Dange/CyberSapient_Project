@@ -117,7 +117,7 @@ jobs:
 
   terraform-apply:
     name: Terraform Apply
-    needs: terraform-approve
+    needs: sts
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
 
@@ -133,9 +133,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ needs.terraform-approve.outputs.aws_access_key_id }}
-          aws-secret-access-key: ${{ needs.terraform-approve.outputs.aws_secret_access_key }}
-          aws-session-token: ${{ needs.terraform-approve.outputs.aws_session_token }}
+          aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: ap-south-1
 
       - name: Terraform Init
