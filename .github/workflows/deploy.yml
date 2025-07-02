@@ -26,7 +26,9 @@ jobs:
           aws sts get-caller-identity
           aws s3 ls
 
-  terraform_plan: 
-    - name: Terraform Plam
-      run: |
-        aws sts get-caller-identity
+  terraform_plan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Terraform Plan
+        run: aws sts get-caller-identity
