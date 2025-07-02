@@ -70,11 +70,11 @@ jobs:
         run: terraform plan
         working-directory: terraform
 
-      - name: Upload tfplan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/tfplan
+      # - name: Upload tfplan
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: tfplan
+      #     path: terraform/tfplan
 
   terraform-Apply:
     name: Terraform Approval
