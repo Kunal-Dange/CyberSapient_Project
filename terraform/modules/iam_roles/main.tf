@@ -11,7 +11,7 @@ resource "aws_iam_role_policy" "policy" {
   for_each = var.iam_role_policies
   name     = each.value.name
   role     = aws_iam_role.roles[each.value.role_name].name
-  policy   = jsonencode(each.value.policy)
+  policy   = each.value.policy
 }
 
 resource "aws_iam_policy_attachment" "policy_attachment" {
