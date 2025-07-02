@@ -56,6 +56,12 @@ jobs:
     name: Build & Push Docker Image to ECR
     runs-on: ubuntu-latest
 
+    if: |
+      contains(github.event.head_commit.message, 'docker') ||
+      github.event_name == 'push' && (
+        contains(github.event.commits.*.modified, 'frontend/') || contains(github.event.commits.*.modified, 'Dockerfile')
+      )
+
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'nonproduction' }}
 
@@ -97,6 +103,12 @@ jobs:
   terraform-plan:
     runs-on: ubuntu-latest
     needs: sts
+
+    if: |
+      github.event_name == 'push' && (
+        contains(github.event.commits.*.modified, 'terraform/') || contains(github.event.head_commit.message, 'terraform')
+      )
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
