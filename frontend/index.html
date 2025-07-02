@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CyberSapient DevOps Deployment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f2f2f2;
+      color: #333;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      color: #2d7aeb;
+    }
+    p {
+      font-size: 1.2rem;
+      margin: 10px 0;
+    }
+    .tech-stack {
+      margin-top: 20px;
+      font-size: 1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ Frontend App Deployed Successfully!</h1>
+  <p>This confirms the deployment of the frontend application for the <strong>CyberSapient Project</strong>.</p>
+  <p>We’ve implemented a fully automated CI/CD pipeline using GitHub Actions, Docker, Terraform, and AWS EKS.</p>
+  <p>You're currently viewing the <strong><span id="env-name">[ENV]</span></strong> environment.</p>
+  <div class="tech-stack">
+    <p>🚀 Infrastructure as Code • Kubernetes • Monitoring • Cloud-Native</p>
+    <p>Thank you for visiting. Hope you like it!</p>
+  </div>
+
+  <script>
+    // You can inject environment name from Helm ConfigMap or env var
+    document.getElementById('env-name').textContent = "{{ .Values.env.ENV || 'staging' }}";
+  </script>
+</body>
+</html>
