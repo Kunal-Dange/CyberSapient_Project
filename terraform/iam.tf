@@ -28,7 +28,7 @@ EOF
   iam_role_policies = {
     policy1 = {
       name      = "example-policy"
-      role_name = "example-role"
+      role_name = "role1" # Use the key from iam_roles, not the role name
       policy    = <<EOF
 {
   "Version": "2012-10-17",
@@ -47,7 +47,7 @@ EOF
   managed_policies = {
     attachment1 = {
       name      = "example-attachment"
-      role_name = "example-role"
+      role_name = "role1" # Use the key from iam_roles, not the role name
       policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
     }
   }
