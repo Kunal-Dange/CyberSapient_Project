@@ -76,6 +76,14 @@ jobs:
     environment:
       name: staging
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6  
+          
       - uses: actions/download-artifact@v4
         with:
           name: tfplan
