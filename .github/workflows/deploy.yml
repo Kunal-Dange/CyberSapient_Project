@@ -71,7 +71,7 @@ jobs:
         working-directory: terraform
 
   terraform-approve:
-    name: Terraform Plan
+    name: Terraform Approval
     needs: sts
     runs-on: ubuntu-latest
     if: |
@@ -119,7 +119,7 @@ jobs:
     name: Terraform Apply
     needs: terraform-approve
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
 
     steps:
       - name: Checkout repo
