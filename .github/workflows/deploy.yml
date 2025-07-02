@@ -9,6 +9,10 @@ on:
 jobs:
   sts:
     runs-on: ubuntu-latest
+    outputs:
+      aws_access_key_id: ${{ steps.sts.outputs.aws_access_key_id }}
+      aws_secret_access_key: ${{ steps.sts.outputs.aws_secret_access_key }}
+      aws_session_token: ${{ steps.sts.outputs.aws_session_token }}
 
     steps:
       - name: Checkout code
@@ -26,13 +30,21 @@ jobs:
           aws sts get-caller-identity
           aws s3 ls
 
+      - name: Assume role and set outputs
+        id: sts
+        run: |
+          CREDS=$(aws sts assume-role \
+            --role-arn "arn:aws:iam::730335383329:role/Kubernetes" \
+            --role-session-name github-actions-session)
+
+          echo "::set-output name=aws_access_key_id::$(echo $CREDS | jq -r '.Credentials.AccessKeyId')"
+          echo "::set-output name=aws_secret_access_key::$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')"
+          echo "::set-output name=aws_session_token::$(echo $CREDS | jq -r '.Credentials.SessionToken')"
+
   terraform_plan:
     needs: sts
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Configure assumed role credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
