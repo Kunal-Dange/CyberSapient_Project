@@ -79,6 +79,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Configure assumed role credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
+          aws-region: us-east-1
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -86,7 +94,7 @@ jobs:
       - name: Terraform init
         run: terraform init
         working-directory: terraform
-         
+
       - uses: actions/download-artifact@v4
         with:
           name: tfplan
