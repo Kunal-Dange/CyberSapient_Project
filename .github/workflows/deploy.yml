@@ -70,6 +70,12 @@ jobs:
         run: terraform plan
         working-directory: terraform
 
+      - name: Upload tfplan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: terraform/tfplan
+
   terraform-Apply:
     name: Terraform Approval
     needs: sts
@@ -104,13 +110,19 @@ jobs:
           aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
           aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: ap-south-1
+      
+      - name: Download tfplan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: terraform
 
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ steps.setenv.outputs.tf_dir }}
 
       - name: Terraform Apply
-        run: terraform apply 
+        run: terraform apply -auto-approve
         working-directory: terraform
 
 
