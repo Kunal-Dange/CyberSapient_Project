@@ -54,4 +54,6 @@ jobs:
           aws-region: ap-south-1
 
       - name: Confirm identity
-        run: aws sts get-caller-identity
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls
