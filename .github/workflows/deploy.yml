@@ -69,9 +69,6 @@ jobs:
         run: terraform plan
         working-directory: terraform
 
-      - name: Show Terraform Plan Output
-        run: terraform show -no-color tfplan
-        working-directory: terraform
   # terraform_apply:
   #   needs: sts
   #   runs-on: ubuntu-latest
