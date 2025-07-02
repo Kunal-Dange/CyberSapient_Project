@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Configure assumed role credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -69,19 +69,19 @@ jobs:
         run: terraform plan -out=tfplan
         working-directory: terraform
 
-  terraform_apply:
-    needs: sts
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure assumed role credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
-          aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
-          aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
-          aws-region: ap-south-1
+  # terraform_apply:
+  #   needs: sts
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Configure assumed role credentials
+  #       uses: aws-actions/configure-aws-credentials@v4
+  #       with:
+  #         aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
+  #         aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
+  #         aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
+  #         aws-region: ap-south-1
 
-      - name: Confirm identity
-        run: |
-          aws sts get-caller-identity
-          aws s3 ls
+  #     - name: Confirm identity
+  #       run: |
+  #         aws sts get-caller-identity
+  #         aws s3 ls

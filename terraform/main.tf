@@ -1,5 +1,9 @@
 terraform {
-  backend "s3" {}
+  backend "s3" {
+    bucket         = "kd-kubernetes"
+    key            = "terraform.tfstate"
+    region         = "ap-south-1"
+  }
 }
 
 provider "aws" {
