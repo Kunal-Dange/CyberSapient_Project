@@ -1,5 +1,5 @@
 module "iam_roles" {
-  source = "terraform/modules/iam_roles"
+  source = "./modules/iam_roles"
   iam_roles = {
     role1 = {
       name                = "example-role"
