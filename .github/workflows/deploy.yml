@@ -89,7 +89,7 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "tf_dir=terraform/nonprod" >> $GITHUB_OUTPUT
           elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
-            echo "tf_dir=terraform/dev" >> $GITHUB_OUTPUT
+            echo "tf_dir=terraform" >> $GITHUB_OUTPUT
           fi
 
       - name: Setup Terraform
