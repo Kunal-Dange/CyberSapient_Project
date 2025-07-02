@@ -33,7 +33,7 @@ jobs:
       - name: Assume role and set outputs
         id: sts
         run: |
-          CREDS=$(aws sts assume-role \
+          CREDS=$(aws sts sts \
             --role-arn "arn:aws:iam::730335383329:role/Kubernetes" \
             --role-session-name github-actions-session)
 
@@ -71,7 +71,7 @@ jobs:
 
     terraform-approve:
     name: Terraform Plan
-    needs: assume-role
+    needs: sts
     runs-on: ubuntu-latest
     if: |
       github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
@@ -99,9 +99,9 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ needs.assume-role.outputs.aws_access_key_id }}
-          aws-secret-access-key: ${{ needs.assume-role.outputs.aws_secret_access_key }}
-          aws-session-token: ${{ needs.assume-role.outputs.aws_session_token }}
+          aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: ap-south-1
 
       - name: Terraform Init
@@ -112,9 +112,6 @@ jobs:
         run: terraform plan -out=tfplan
         working-directory: ${{ steps.setenv.outputs.tf_dir }}
 
-      - name: Show Plan Output
-        run: terraform show -no-color tfplan
-        working-directory: ${{ steps.setenv.outputs.tf_dir }}
 
 
     terraform-apply:
