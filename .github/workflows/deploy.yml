@@ -61,7 +61,7 @@ jobs:
         with:
           terraform_version: 1.6.6
 
-      - name: Terraform pnit
+      - name: Terraform init
         run: terraform init
         working-directory: terraform
 
@@ -69,19 +69,81 @@ jobs:
         run: terraform plan
         working-directory: terraform
 
-  # terraform_apply:
-  #   needs: sts
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Configure assumed role credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         aws-access-key-id: ${{ needs.sts.outputs.aws_access_key_id }}
-  #         aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
-  #         aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
-  #         aws-region: ap-south-1
+    terraform-approve:
+    name: Terraform Plan
+    needs: assume-role
+    runs-on: ubuntu-latest
+    if: |
+      github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
 
-  #     - name: Confirm identity
-  #       run: |
-  #         aws sts get-caller-identity
-  #         aws s3 ls
+    environment: ${{ github.ref == 'refs/heads/develop' && 'Staging' || '' }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set environment directory
+        id: setenv
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "tf_dir=terraform/nonprod" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "tf_dir=terraform/dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ needs.assume-role.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.assume-role.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.assume-role.outputs.aws_session_token }}
+          aws-region: ap-south-1
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ${{ steps.setenv.outputs.tf_dir }}
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: ${{ steps.setenv.outputs.tf_dir }}
+
+      - name: Show Plan Output
+        run: terraform show -no-color tfplan
+        working-directory: ${{ steps.setenv.outputs.tf_dir }}
+
+
+    terraform-apply:
+    name: Terraform Apply
+    needs: terraform-approve
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ needs.terraform-approve.outputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ needs.terraform-approve.outputs.aws_secret_access_key }}
+          aws-session-token: ${{ needs.terraform-approve.outputs.aws_session_token }}
+          aws-region: ap-south-1
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+        working-directory: terraform
