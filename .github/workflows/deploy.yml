@@ -84,7 +84,7 @@ jobs:
           else
             ENV="nonprod"
           fi
-          echo "REPO_NAME=cybersapient-frontend" >> $GITHUB_OUTPUT
+          echo "REPO_NAME=cybersapient-ecr-repo" >> $GITHUB_OUTPUT
           echo "TAG=${ENV}-${BRANCH_NAME}" >> $GITHUB_OUTPUT
           echo "REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_OUTPUT
 
