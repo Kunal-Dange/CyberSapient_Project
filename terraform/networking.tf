@@ -8,9 +8,9 @@ module "vpc" {
 data "aws_availability_zones" "available" {}
 
 resource "aws_subnet" "public" {
-  count                   = 2
+  count                   = length(data.aws_availability_zones.available.names)
   vpc_id                  = module.vpc.id
-  cidr_block              = cidrsubnet(module.vpc.cidr_block, 8, count.index)
+  cidr_block              = cidrsubnet(module.vpc.cidr_block, 4, count.index)
   map_public_ip_on_launch = true
   availability_zone       = data.aws_availability_zones.available.names[count.index]
 
@@ -20,9 +20,9 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_subnet" "private" {
-  count             = 2
+  count             = length(data.aws_availability_zones.available.names)
   vpc_id            = module.vpc.id
-  cidr_block        = cidrsubnet(module.vpc.cidr_block, 8, count.index + 10)
+  cidr_block        = cidrsubnet(module.vpc.cidr_block, 4, count.index + 10)
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
