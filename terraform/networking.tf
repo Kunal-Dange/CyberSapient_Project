@@ -4,3 +4,33 @@ module "vpc" {
     vpc_name = "CyberSapient-VPC"
     app_env = "dev1"
 }
+
+data "aws_availability_zones" "available" {}
+
+resource "aws_subnet" "public" {
+  count                   = 2
+  vpc_id                  = module.vpc.id
+  cidr_block              = cidrsubnet(module.vpc.cidr_block, 8, count.index)
+  map_public_ip_on_launch = true
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    Name = "CyberSapient-public-${count.index}"
+  }
+}
+
+resource "aws_subnet" "private" {
+  count             = 2
+  vpc_id            = module.vpc.id
+  cidr_block        = cidrsubnet(module.vpc.cidr_block, 8, count.index + 10)
+  availability_zone = data.aws_availability_zones.available.names[count.index]
+
+  tags = {
+    Name = "CyberSapient-private-${count.index}"
+  }
+}
+
+
+
+
+
