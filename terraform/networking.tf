@@ -5,9 +5,7 @@ module "vpc" {
     app_env = "dev1"
 }
 
-output "vpc_id" {
-  value = module.vpc.vpc_id
-}
+
 data "aws_availability_zones" "available" {}
 
 resource "aws_subnet" "public" {
