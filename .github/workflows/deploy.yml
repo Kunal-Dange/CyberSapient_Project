@@ -230,6 +230,5 @@ jobs:
             --role-arn arn:aws:iam::730335383329:role/GitHubActionsEKSRole  
       - name: Deploy Pods
         run: |
-          cd ./k8s
           kubectl apply -f ./k8s/deployment.yaml --validate=false
           kubectl apply -f ./k8s/service.yaml --validate=false
