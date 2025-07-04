@@ -10,7 +10,7 @@ resource "aws_eks_cluster" "this" {
     service_ipv4_cidr = "172.20.0.0/16"
   }
 
-  depends_on = [var.cluster_role_arn]
+  depends_on = [aws_iam_role.eks_cluster_role]
 }
 
 resource "aws_eks_node_group" "this" {
@@ -27,7 +27,7 @@ resource "aws_eks_node_group" "this" {
 
   instance_types = ["t3.medium"]
 
-  depends_on = [aws_eks_cluster.this]
+  depends_on = [aws_iam_role.eks_node_role.arn]
 }
 
 output "cluster_name" {

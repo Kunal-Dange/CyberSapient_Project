@@ -120,6 +120,13 @@ jobs:
           aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
           aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: us-east-1
+      - name: Set environment variable from branch
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          if [ "$BRANCH_NAME" == "main" ]; then
+            echo "TF_VAR_environment=prod" >> $GITHUB_ENV
+          else
+            echo "TF_VAR_environment=nonprod" >> $GITHUB_ENV
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -157,7 +164,13 @@ jobs:
           aws-secret-access-key: ${{ needs.sts.outputs.aws_secret_access_key }}
           aws-session-token: ${{ needs.sts.outputs.aws_session_token }}
           aws-region: us-east-1
-          
+      - name: Set environment variable from branch
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          if [ "$BRANCH_NAME" == "main" ]; then
+            echo "TF_VAR_environment=prod" >> $GITHUB_ENV
+          else
+            echo "TF_VAR_environment=nonprod" >> $GITHUB_ENV
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
