@@ -1,3 +1,4 @@
+replicaCount: 1
 image:
   repository: 730335383329.dkr.ecr.us-east-1.amazonaws.com/cybersapient-ecr-repo
   tag: prod-main
@@ -6,5 +7,3 @@ image:
 service:
   type: LoadBalancer
   port: 80
-
-namespace: prod
