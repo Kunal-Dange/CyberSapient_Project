@@ -6,6 +6,9 @@ on:
       - main
       - develop
 
+permissions:
+  id-token: write     # Required for OIDC
+  contents: read      
 
 jobs:
   sts:
