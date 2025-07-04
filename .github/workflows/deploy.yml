@@ -292,17 +292,21 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           role-session-name: github-actions-session
 
-      - name: Update kubeconfig for EKS
+      - name: Update kubeconfig
         run: |
-          mkdir -p $HOME/.kube
-          aws eks update-kubeconfig --region us-east-1 --name ${{ steps.env.outputs.environment }}-cluster --kubeconfig $HOME/.kube/config
-        env:
-          AWS_REGION: us-east-1
-      - name: Set current context
+          aws eks update-kubeconfig \
+            --name nonprod-cluster \
+            --region ${{ secrets.AWS_REGION }} \
+            --kubeconfig $HOME/.kube/config
+        
+      - name: Use EKS context
+        run: |
+          kubectl config use-context nonprod-cluster
+        
+      - name: Set default namespace
         run: |
           kubectl config set-context --current --namespace nonprod
-        env:
-          KUBECONFIG: $HOME/.kube/config
+        
       
       - name: Validate cluster access
         run: |
