@@ -2,11 +2,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
-  namespace: {{ .Values.namespace }}
+  namespace: nonprod
 spec:
   selector:
     app: frontend
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 80
       targetPort: 80
-  type: {{ .Values.service.type }}
+  type: LoadBalancer
