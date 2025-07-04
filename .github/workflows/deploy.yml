@@ -265,7 +265,7 @@ jobs:
   kubectl-deploy:
     name: Deploy Pods with Helm
     runs-on: ubuntu-latest
-    needs: terraform-apply
+    needs: sts
 
     steps:
       - name: Checkout Code
