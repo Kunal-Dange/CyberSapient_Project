@@ -265,7 +265,7 @@ jobs:
   helm-deploy:
     name: Deploy App with Helm
     runs-on: ubuntu-latest
-    needs: terraform-apply
+    needs: sts
 
     steps:
       - name: Checkout Code
