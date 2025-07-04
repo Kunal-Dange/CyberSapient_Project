@@ -5,7 +5,7 @@ resource "kubernetes_namespace" "cybersapient_namespace" {
     }
 
     labels = {
-      mylabel = "label-value"
+      mylabel = "CST-NS"
     }
 
     name = "${var.environment}"
