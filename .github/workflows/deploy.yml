@@ -229,7 +229,19 @@ jobs:
             --name ${{ steps.env.outputs.environment }}-cluster \
             --region ${{ secrets.AWS_REGION }} \
             --kubeconfig $HOME/.kube/config
-      
+      - name: Debug kubeconfig
+        run: |
+          echo "Kubeconfig contents:"
+          cat $HOME/.kube/config
+          echo ""
+          echo "Available contexts:"
+          kubectl config get-contexts
+          echo ""
+          echo "Current context:"
+          kubectl config current-context
+        env:
+          KUBECONFIG: $HOME/.kube/config
+
       - name: Check kubeconfig context
         run: |
           echo "Kubeconfig contents:"
