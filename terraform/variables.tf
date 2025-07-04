@@ -27,12 +27,3 @@ variable "private_subnets" {
   description = "List of private subnet IDs"
 }
 
-variable "cluster_role_arn" {
-  type        = string
-  description = "IAM Role ARN for the EKS cluster"
-}
-
-variable "node_role_arn" {
-  type        = string
-  description = "IAM Role ARN for worker nodes"
-}
