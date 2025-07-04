@@ -295,15 +295,12 @@ jobs:
       - name: Update kubeconfig for EKS
         run: |
           mkdir -p $HOME/.kube
-          aws eks update-kubeconfig \
-            --region us-east-1 \
-            --name ${{ steps.env.outputs.environment }}-cluster \
-            --kubeconfig $HOME/.kube/config
+          aws eks update-kubeconfig --region us-east-1 --name ${{ steps.env.outputs.environment }}-cluster --kubeconfig $HOME/.kube/config
         env:
           AWS_REGION: us-east-1
       - name: Set current context
         run: |
-          kubectl config use-context nonprod-cluster
+          kubectl config set-context --current --namespace nonprod
         env:
           KUBECONFIG: $HOME/.kube/config
       
