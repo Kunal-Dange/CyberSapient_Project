@@ -122,11 +122,12 @@ jobs:
           aws-region: us-east-1
       - name: Set environment variable from branch
         run: |
-          BRANCH_NAME="${GITHUB_REF##*/}"
+          RANCH_NAME="${{ github.ref_name }}"
           if [ "$BRANCH_NAME" == "main" ]; then
             echo "TF_VAR_environment=prod" >> $GITHUB_ENV
           else
             echo "TF_VAR_environment=nonprod" >> $GITHUB_ENV
+          fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -166,11 +167,13 @@ jobs:
           aws-region: us-east-1
       - name: Set environment variable from branch
         run: |
-          BRANCH_NAME="${GITHUB_REF##*/}"
+          RANCH_NAME="${{ github.ref_name }}"
           if [ "$BRANCH_NAME" == "main" ]; then
             echo "TF_VAR_environment=prod" >> $GITHUB_ENV
           else
             echo "TF_VAR_environment=nonprod" >> $GITHUB_ENV
+          fi
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
