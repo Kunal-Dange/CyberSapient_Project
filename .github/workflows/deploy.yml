@@ -229,7 +229,18 @@ jobs:
             --name ${{ steps.env.outputs.environment }}-cluster \
             --region ${{ secrets.AWS_REGION }} \
             --kubeconfig $HOME/.kube/config
- 
+      
+      - name: Check kubeconfig context
+        run: |
+          echo "Kubeconfig contents:"
+          cat $HOME/.kube/config
+      
+          echo "Contexts:"
+          kubectl config get-contexts
+        env:
+          KUBECONFIG: $HOME/.kube/config
+          
+      
       - name: Deploy Pods
         run: |
           kubectl apply -f ./k8s/deployment.yaml --validate=false
