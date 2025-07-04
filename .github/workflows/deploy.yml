@@ -225,8 +225,6 @@ jobs:
       - name: Update kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-          sudo chown $(id -u):$(id -g) $HOME/.kube/config
           aws eks update-kubeconfig \
             --region us-east-1 \
             --name nonprod-cluster \
