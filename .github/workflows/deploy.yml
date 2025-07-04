@@ -227,7 +227,7 @@ jobs:
           aws eks update-kubeconfig \
             --name ${{ steps.env.outputs.environment }}-cluster \
             --region ${{ secrets.AWS_REGION }} \
-            --role-arn arn:aws:iam::730335383329:role/GitHubActionsEKSRole  
+ 
       - name: Deploy Pods
         run: |
           kubectl apply -f ./k8s/deployment.yaml --validate=false
