@@ -303,7 +303,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
       - name: Set current context
         run: |
-          kubectl config use-context arn:aws:eks:${{ secrets.AWS_REGION }}:730335383329:cluster/${{ steps.env.outputs.environment }}-cluster
+          kubectl config use-context nonprod-cluster
         env:
           KUBECONFIG: $HOME/.kube/config
       
