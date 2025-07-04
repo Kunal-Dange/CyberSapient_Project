@@ -1,0 +1,10 @@
+image:
+  repository: 730335383329.dkr.ecr.us-east-1.amazonaws.com/cybersapient-ecr-repo
+  tag: nonprod-develop
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 80
+
+namespace: nonprod
