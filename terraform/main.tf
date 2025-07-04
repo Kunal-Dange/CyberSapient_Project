@@ -25,3 +25,17 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = "${var.environment}-cluster"
   }
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config"
+  }
+}
+
+resource "helm_release" "frontend" {
+  name       = "frontend"
+  namespace  = var.environment
+  create_namespace = true
+  chart      = "${path.module}/helm"
+
+  values = [file("${path.module}/helm/values-${var.environment}.yaml")]
+}
