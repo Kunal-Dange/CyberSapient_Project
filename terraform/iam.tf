@@ -36,3 +36,22 @@ output "cluster_role_arn" {
 output "node_role_arn" {
   value = aws_iam_role.eks_node_role.arn
 }
+
+resource "aws_iam_role" "fargate_pod_execution" {
+  name = "${var.environment}-fargate-pod-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "eks-fargate-pods.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+
+  managed_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+  ]
+}
