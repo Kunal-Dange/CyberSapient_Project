@@ -294,6 +294,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
+          aws sts get-caller-identity
           aws eks update-kubeconfig \
             --name nonprod-cluster \
             --region ${{ secrets.AWS_REGION }} \
