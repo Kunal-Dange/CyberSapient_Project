@@ -25,9 +25,10 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = "${var.environment}-cluster"
   }
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
+  
+  provider "helm" {
+    kubernetes {
+      config_path = "~/.kube/config"
   }
 }
 
