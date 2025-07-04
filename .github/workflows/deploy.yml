@@ -296,14 +296,14 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           aws eks update-kubeconfig \
-            --region ${{ secrets.AWS_REGION }} \
+            --region us-east-1 \
             --name ${{ steps.env.outputs.environment }}-cluster \
             --kubeconfig $HOME/.kube/config
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_REGION: us-east-1
       - name: Set current context
         run: |
-          kubectl config use-context arn:aws:eks:${{ secrets.AWS_REGION }}:730335383329:cluster/${{ steps.env.outputs.environment }}-cluster
+          kubectl config use-context arn:aws:eks:us-east-1:730335383329:cluster/${{ steps.env.outputs.environment }}-cluster
         env:
           KUBECONFIG: $HOME/.kube/config
       
