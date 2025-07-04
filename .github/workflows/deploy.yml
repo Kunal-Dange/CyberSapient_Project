@@ -224,11 +224,15 @@ jobs:
 
       - name: Update kubeconfig for EKS (dynamic name)
         run: |
+          mkdir -p $HOME/.kube
           aws eks update-kubeconfig \
             --name ${{ steps.env.outputs.environment }}-cluster \
             --region ${{ secrets.AWS_REGION }} \
+            --kubeconfig $HOME/.kube/config
  
       - name: Deploy Pods
         run: |
           kubectl apply -f ./k8s/deployment.yaml --validate=false
           kubectl apply -f ./k8s/service.yaml --validate=false
+        env:
+          KUBECONFIG: $HOME/.kube/config
