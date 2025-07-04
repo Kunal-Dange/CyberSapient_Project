@@ -300,10 +300,10 @@ jobs:
             --region ${{ secrets.AWS_REGION }} \
             --kubeconfig $HOME/.kube/config
 
-      - name: Override image tag dynamically
-        run: |
-          yq eval ".image.tag = \"${{ steps.env.outputs.image_tag }}\"" -i ${{ steps.env.outputs.values_file }}
-        working-directory: terraform/helm/frontend-chart
+      # - name: Override image tag dynamically
+      #   run: |
+      #     yq eval ".image.tag = \"${{ steps.env.outputs.image_tag }}\"" -i ${{ steps.env.outputs.values_file }}
+      #   working-directory: terraform/helm/frontend-chart
 
       - name: Deploy using Helm
         run: |
