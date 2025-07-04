@@ -27,7 +27,7 @@ resource "aws_eks_node_group" "this" {
 
   instance_types = ["t3.medium"]
 
-  depends_on = [aws_iam_role.eks_node_role.arn]
+  depends_on = [aws_iam_role.eks_node_role]
 }
 
 output "cluster_name" {
