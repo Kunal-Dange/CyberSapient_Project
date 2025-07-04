@@ -218,21 +218,22 @@ jobs:
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::730335383329:role/GitHubActionsEKSRole
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: github-actions-session
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Update kubeconfig for EKS (dynamic name)
         run: |
           mkdir -p $HOME/.kube
           aws eks update-kubeconfig \
+            --region ${{ env.AWS_REGION }} \
             --name ${{ steps.env.outputs.environment }}-cluster \
-            --region ${{ secrets.AWS_REGION }} \
             --kubeconfig $HOME/.kube/config
+
  
       - name: Deploy Pods
         run: |
           kubectl apply -f ./k8s/deployment.yaml --validate=false
           kubectl apply -f ./k8s/service.yaml --validate=false
+          kubectl rollout status deployment/frontend --timeout=120s
         env:
           KUBECONFIG: $HOME/.kube/config
