@@ -7,7 +7,7 @@ resource "aws_ecr_repository" "example" {
 
   tags = {
     Name        = "CyberSapient ECR Repository"
-    Environment = "Dev"
+    Environment = "${var.environment}"
   }
 }
 

@@ -7,3 +7,10 @@ image:
 service:
   type: LoadBalancer
   port: 80
+resources:
+  requests:
+    cpu: "0.5"
+    memory: "1024Mi"
+  limits:
+    cpu: "0.5"
+    memory: "1024Mi"
