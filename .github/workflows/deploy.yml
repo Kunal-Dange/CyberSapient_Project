@@ -305,16 +305,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           KUBECONFIG: $HOME/.kube/config
-      # - name: Use EKS context and set namespace
-      #   run: |
-      #     CONTEXT_NAME="arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/${{ steps.env.outputs.cluster }}"
-      #     kubectl config use-context $CONTEXT_NAME
-      #     kubectl config set-context --current --namespace=${{ steps.env.outputs.namespace }}
-      #   env:
-      #     KUBECONFIG: $HOME/.kube/config
+      - name: Use EKS context and set namespace
+        run: |
+          CONTEXT_NAME="arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/${{ steps.env.outputs.cluster }}"
+          kubectl config use-context $CONTEXT_NAME
+          kubectl config set-context --current --namespace=${{ steps.env.outputs.namespace }}
+        env:
+          KUBECONFIG: $HOME/.kube/config
   
       - name: Deploy using Helm
         run: |
+          export KUBECONFIG=$HOME/.kube/config
           helm upgrade --install frontend ./terraform/helm \
             -f terraform/helm/${{ steps.env.outputs.values_file }} \
             --namespace ${{ steps.env.outputs.environment }} \
