@@ -305,20 +305,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
           KUBECONFIG: $HOME/.kube/config
-      - name: Use EKS context
+      - name: Use EKS context and set namespace
         run: |
-          kubectl config use-context nonprod-cluster
-        
-      - name: Set default namespace
-        run: |
-          kubectl config set-context --current --namespace nonprod
-        
-      
-      - name: Validate cluster access
-        run: |
-          echo "Current context:"
-          kubectl config current-context
-          kubectl get nodes
+          CONTEXT_NAME="arn:aws:eks:${{ secrets.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:cluster/${{ steps.env.outputs.cluster }}"
+          kubectl config use-context $CONTEXT_NAME
+          kubectl config set-context --current --namespace=${{ steps.env.outputs.namespace }}
         env:
           KUBECONFIG: $HOME/.kube/config
   
