@@ -128,7 +128,7 @@ jobs:
     needs: sts
 
     if: |
-      github.ref == 'refs/heads/main' &&
+      github.ref == 'refs/heads/main' ||
       github.event_name == 'push' && (
         contains(github.event.commits.*.modified, 'terraform/') || contains(github.event.head_commit.message, 'terraform')
       )
