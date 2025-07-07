@@ -4,11 +4,13 @@ metadata:
   name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
+    {{- include "frontend-1.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   selector:
     app: {{ .Chart.Name }}
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: {{ .Values.service.port }}
-      targetPort: 80
+      targetPort: http
