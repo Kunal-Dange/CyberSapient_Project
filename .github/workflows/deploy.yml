@@ -218,6 +218,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: sts
 
+    if: |
+      github.event_name == 'push' && (
+        contains(github.event.commits.*.modified, 'helm/') || contains(github.event.head_commit.message, 'helm')
+      )
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
