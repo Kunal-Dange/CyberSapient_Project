@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 2
 image:
   repository: 730335383329.dkr.ecr.us-east-1.amazonaws.com/cybersapient-ecr-repo
   tag: prod-main
@@ -14,3 +14,9 @@ resources:
   limits:
     cpu: "0.5"
     memory: "1024Mi"
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 60

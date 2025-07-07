@@ -15,3 +15,9 @@ resources:
   limits:
     cpu: "0.25"
     memory: "512Mi"
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 60

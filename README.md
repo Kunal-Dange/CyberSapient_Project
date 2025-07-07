@@ -1,18 +1,18 @@
-# 🚀 CyberSapient DevOps Project
+## CyberSapient DevOps Project
 
 A production-grade DevOps implementation featuring containerized applications, automated CI/CD pipelines, Kubernetes orchestration, and comprehensive monitoring.
 
-## 🎯 Project Overview
+## Project Overview
 
-This project demonstrates enterprise-level DevOps practices with:
+This project demonstrates application deployment with following technologies:
 
-- **Containerized Frontend Application** (Docker + Nginx)
-- **Multi-Environment Deployment** (Staging + Production)
-- **Infrastructure as Code** (Terraform + AWS)
-- **Automated CI/CD** (GitHub Actions)
-- **Kubernetes Orchestration** (AWS EKS)
-- **Monitoring & Observability** (Prometheus + Grafana)
-- **Secrets Management** (AWS Secrets Manager)
+- Containerized Frontend Application** (Docker)
+- Multi-Environment Deployment** (Staging + Production)
+- Infrastructure as Code** (Terraform + AWS)
+- Automated CI/CD** (GitHub Actions)
+- Kubernetes Orchestration** (AWS EKS)
+- Monitoring & Observability** (Prometheus + Grafana)
+
 
 ## 🏗️ Architecture
 
@@ -28,8 +28,6 @@ This project demonstrates enterprise-level DevOps practices with:
                        │   (Container)   │    │  + Grafana      │
                        └─────────────────┘    └─────────────────┘
 ```
-
-## 🚀 Quick Start
 
 ### Prerequisites
 
@@ -82,21 +80,22 @@ CyberSapient_Project/
 └── ARCHITECTURE.md             # Detailed architecture docs
 ```
 
-## 🔄 CI/CD Pipeline
+
 
 ### Workflow Stages
 
-1. **Security Scan** - Trivy vulnerability scanning
-2. **Build & Test** - Docker image build and testing
-3. **Terraform Plan** - Infrastructure changes review
-4. **Deploy to Staging** - Automatic deployment to staging
-5. **Deploy to Production** - Manual approval required
-6. **Health Checks** - Post-deployment verification
+1. Security Scan - Trivy vulnerability scanning
+2. STS - STS to targeted AWS Account
+3. Build & Test - Docker image build and testing
+4. Terraform Plan - Infrastructure changes review
+5. Deploy to Staging - Automatic deployment to staging
+6. Deploy to Production - Manual approval required
+
 
 ### Environment Strategy
 
-- **Staging**: Auto-deploy on `develop` branch
-- **Production**: Manual approval on `main` branch
+- Staging:  Manual approval on `main` branch
+- Production: Auto-deploy on `develop` branch
 
 ## 📊 Monitoring & Observability
 
@@ -106,79 +105,13 @@ CyberSapient_Project/
 - Container resource usage
 - Kubernetes cluster metrics
 
-### Access Monitoring
-```bash
-# Get Grafana URL
-kubectl get svc -n monitoring prometheus-grafana
-
-# Get Prometheus URL
-kubectl get svc -n monitoring prometheus-kube-prometheus-prometheus
-```
-
-## 🔐 Security Features
-
-- **Container Security**: Trivy vulnerability scanning
-- **Infrastructure Security**: IAM roles with least privilege
-- **Secrets Management**: AWS Secrets Manager integration
-- **Network Security**: VPC with private subnets
-
-## 🛠️ Technology Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Application** | HTML5, CSS3, JavaScript |
-| **Container** | Docker, Nginx |
-| **Orchestration** | Kubernetes (AWS EKS) |
-| **Infrastructure** | Terraform, AWS |
-| **CI/CD** | GitHub Actions |
-| **Monitoring** | Prometheus, Grafana |
-| **Secrets** | AWS Secrets Manager |
 
 ## 📈 Scaling & Performance
 
-- **Horizontal Scaling**: Kubernetes HPA
-- **Load Balancing**: AWS Load Balancer
-- **High Availability**: Multi-AZ deployment
-- **Resource Optimization**: Container limits and requests
+- Horizontal Scaling**: Kubernetes HPA
+- High Availability**: Multi-AZ deployment
+- Resource Optimization**: Container limits and requests
 
-## 🆘 Troubleshooting
 
-### Common Issues
+## Final Deployment 
 
-1. **Terraform Apply Fails**
-   ```bash
-   terraform plan -refresh-only
-   terraform apply -auto-approve
-   ```
-
-2. **Kubernetes Pod Issues**
-   ```bash
-   kubectl get pods -n <namespace>
-   kubectl describe pod <pod-name>
-   kubectl logs <pod-name>
-   ```
-
-3. **Monitoring Access**
-   ```bash
-   kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
-   # Access Grafana at http://localhost:3000
-   ```
-
-## 📞 Support
-
-For issues and questions:
-1. Check the [ARCHITECTURE.md](ARCHITECTURE.md) for detailed documentation
-2. Review GitHub Actions logs for CI/CD issues
-3. Check AWS CloudWatch for infrastructure logs
-
-## 🎯 Next Steps
-
-- [ ] Add database integration
-- [ ] Implement blue-green deployments
-- [ ] Add more comprehensive monitoring
-- [ ] Set up alerting rules
-- [ ] Implement backup strategies
-
----
-
-**Built with ❤️ for CyberSapient DevOps Challenge**
