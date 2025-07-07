@@ -14,7 +14,7 @@ This project demonstrates application deployment with following technologies:
 - Monitoring & Observability** (Prometheus + Grafana)
 
 
-## 🏗️ Architecture
+## Architecture Diagram
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -115,3 +115,4 @@ CyberSapient_Project/
 
 ## Final Deployment 
 
+You can see the final Deploymnet under the forlder result/Final_Page.png
