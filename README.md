@@ -67,15 +67,17 @@ The CI/CD pipeline will automatically deploy:
 CyberSapient_Project/
 ├── frontend/                    # Application code
 │   ├── index.html              # Main application
-│   ├── Dockerfile              # Container definition
-│   ├── nginx.conf              # Web server config
-│   └── metrics.html            # Prometheus metrics
+│   └── Dockerfile              # Container definition
+│   
 ├── terraform/                   # Infrastructure as Code
-│   ├── main.tf                 # Main Terraform config
+│   ├── main.tf                 # Terraform config
 │   ├── eks.tf                  # EKS cluster
 │   ├── monitoring.tf           # Prometheus/Grafana
-│   ├── secrets.tf              # Secrets management
+│   ├── iam.tf                  # IAM role and policies
+│   ├── namespace.tf            # Namespace creation based on environment
+│   ├── networking.tf           # VPC and subnet
 │   └── helm/                   # Kubernetes manifests
+├── result/                     # Final Deployment Images and Architecture Diagram 
 ├── .github/workflows/          # CI/CD pipelines
 └── ARCHITECTURE.md             # Detailed architecture docs
 ```
