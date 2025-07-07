@@ -29,13 +29,7 @@ resource "aws_iam_role" "eks_node_role" {
   })
 }
 
-output "cluster_role_arn" {
-  value = aws_iam_role.eks_cluster_role.arn
-}
 
-output "node_role_arn" {
-  value = aws_iam_role.eks_node_role.arn
-}
 
 resource "aws_iam_role" "fargate_pod_execution" {
   name = "${var.environment}-fargate-pod-execution-role"
@@ -98,8 +92,4 @@ resource "aws_iam_role_policy_attachment" "eks_service" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_worker_node" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
 
