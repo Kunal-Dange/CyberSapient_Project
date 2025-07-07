@@ -6,12 +6,12 @@ A production-grade DevOps implementation featuring containerized applications, a
 
 This project demonstrates application deployment with following technologies:
 
-- Containerized Frontend Application** (Docker)
-- Multi-Environment Deployment** (Staging + Production)
-- Infrastructure as Code** (Terraform + AWS)
-- Automated CI/CD** (GitHub Actions)
-- Kubernetes Orchestration** (AWS EKS)
-- Monitoring & Observability** (Prometheus + Grafana)
+- Containerized Frontend Application (Docker)
+- Multi-Environment Deployment(Staging/Develop + Production)
+- Infrastructure as Code (Terraform + AWS)
+- Automated CI/CD (GitHub Actions)
+- Kubernetes Orchestration (AWS EKS)
+- Monitoring & Observability (Prometheus + Grafana)
 
 
 ## Architecture Diagram
@@ -58,8 +58,8 @@ terraform apply
 
 ### 4. Deploy Application
 The CI/CD pipeline will automatically deploy:
-- **Staging**: Push to `develop` branch
-- **Production**: Push to `main` branch (requires approval)
+-  Staging : Push to `develop` branch
+-  Production : Push to `main` branch (requires approval)
 
 ## 📁 Project Structure
 
@@ -108,9 +108,9 @@ CyberSapient_Project/
 
 ## 📈 Scaling & Performance
 
-- Horizontal Scaling**: Kubernetes HPA
-- High Availability**: Multi-AZ deployment
-- Resource Optimization**: Container limits and requests
+- Horizontal Scaling : Kubernetes HPA
+- High Availability : Multi-AZ deployment
+- Resource Optimization : Container limits and requests
 
 
 ## Final Deployment 
