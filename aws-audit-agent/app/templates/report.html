@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AWS Security Posture Report · {{ audit.account_id }}</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main class="container report">
+<nav class="report-nav"><a href="/">← Audit dashboard</a><div><a href="/api/audits/{{ audit.audit_id }}/json">Download JSON evidence</a><button onclick="window.print()">Print / Save PDF</button></div></nav>
+<header class="report-header">
+  <div>
+    <p class="eyebrow">CONFIDENTIAL · AWS SECURITY POSTURE</p>
+    <h1>Security audit report</h1>
+    <p class="muted">Account {{ audit.account_id }} · Audit {{ audit.audit_id }}</p>
+  </div>
+  <div class="report-date"><span>Report generated</span><strong>{{ audit.completed_at }}</strong><span>Scan started {{ audit.started_at }}</span></div>
+</header>
+
+<section class="summary-grid">
+  <article class="panel score-panel">
+    <div class="section-kicker">BUILT-IN CONTROL SCORE</div>
+    {% if audit.score.value is not none %}
+    <div class="score-ring" style="--score: {{ audit.score.value }}%"><div><strong>{{ audit.score.value }}%</strong><span>pass rate</span></div></div>
+    {% else %}
+    <div class="score-empty">N/A</div>
+    {% endif %}
+    <p class="muted">{{ audit.score.passed }} passed of {{ audit.score.evaluated }} decisive checks. Unknown and not-applicable checks are excluded.</p>
+  </article>
+  <article class="panel summary-panel">
+    <div class="section-kicker">AUDIT AT A GLANCE</div>
+    <div class="stats">
+      <div class="stat danger"><strong>{{ audit.summary.get('FAIL',0) }}</strong><span>Failed checks</span></div>
+      <div class="stat good"><strong>{{ audit.summary.get('PASS',0) }}</strong><span>Passed checks</span></div>
+      <div class="stat"><strong>{{ audit.summary.get('UNKNOWN',0) }}</strong><span>Unknown</span></div>
+      <div class="stat"><strong>{{ audit.score.excluded }}</strong><span>Excluded from score</span></div>
+    </div>
+    <p class="muted">Security Hub: {{ audit.securityhub.active_findings }} active findings · {{ audit.securityhub.standards|selectattr('enabled_regions')|list|length }} standards discovered</p>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">EXECUTIVE SUMMARY</p><h2>Priority recommendations</h2></div></div>
+  <ol class="recommendations">{% for recommendation in audit.recommendations %}<li>{{ recommendation }}</li>{% endfor %}</ol>
+  <p class="note"><strong>Interpretation:</strong> The score is a finding-based pass rate for this application's built-in deterministic checks only. It is not the AWS Security Hub score, a complete Security Hub control score, or a compliance certification.</p>
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">VISUAL SUMMARY</p><h2>Control results and Security Hub risk</h2></div></div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>Built-in control results</h3>
+      <p class="muted">Status counts across discovered resources.</p>
+      {% for item in audit.charts.control_status %}
+      <div class="bar-row"><div class="bar-label"><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar-track"><span class="bar-fill {{ item.status|lower }}" style="width:{{ item.percent }}%"></span></div></div>
+      {% endfor %}
+    </div>
+    <div class="chart-card">
+      <h3>Active Security Hub findings</h3>
+      <p class="muted">Open findings grouped by reported severity.</p>
+      {% for item in audit.charts.securityhub_severity %}
+      <div class="bar-row"><div class="bar-label"><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar-track"><span class="bar-fill severity-{{ item.label|lower }}" style="width:{{ (item.count * 100 / audit.securityhub.active_findings) if audit.securityhub.active_findings else 0 }}%"></span></div></div>
+      {% endfor %}
+    </div>
+    <div class="chart-card">
+      <h3>Security Hub compliance status</h3>
+      <p class="muted">Status of active findings; this is not a full standards score.</p>
+      {% for item in audit.charts.securityhub_compliance %}
+      <div class="bar-row"><div class="bar-label"><span>{{ item.label }}</span><strong>{{ item.count }}</strong></div><div class="bar-track"><span class="bar-fill hub-{{ item.status|lower }}" style="width:{{ item.percent }}%"></span></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">SCOPE AND COLLECTION</p><h2>What this audit covered</h2></div></div>
+  <div class="scope-grid">
+    <div><span class="scope-label">AWS account</span><strong>{{ audit.account_id }}</strong></div>
+    <div><span class="scope-label">Caller identity</span><strong class="breakable">{{ audit.caller_arn }}</strong></div>
+    <div><span class="scope-label">Regions scanned</span><strong>{{ audit.regions|length }}</strong></div>
+    <div><span class="scope-label">Evidence records</span><strong>{{ audit.evidence_count }}</strong></div>
+  </div>
+  <p><strong>Regions:</strong> {{ audit.regions|join(', ') }}</p>
+  <p><strong>Collectors:</strong> {{ audit.services_scanned|join(', ') }}</p>
+  <p class="muted">Collection is limited to the services and controls implemented by this application and the Security Hub standards/findings returned to the configured identity. This is not an inventory or assessment of every AWS service or every requirement in a benchmark.</p>
+  <h3>Collector status</h3>
+  <div class="table-wrap"><table><thead><tr><th>Collector</th><th>Status</th><th>Evidence</th><th>Error</th></tr></thead><tbody>
+  {% for plugin in audit.plugin_results %}
+  <tr><td>{{ plugin.plugin }}</td><td><span class="status {{ plugin.status|lower }}">{{ plugin.status }}</span></td><td>{{ plugin.evidence_count }}</td><td>{{ plugin.error or '—' }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">SECURITY HUB COVERAGE</p><h2>Standards and regional status</h2></div></div>
+  {% if audit.securityhub.standards %}
+  <div class="table-wrap"><table><thead><tr><th>Standard</th><th>Regional status</th><th>Discovered in</th></tr></thead><tbody>
+  {% for standard in audit.securityhub.standards %}
+  <tr><td><strong>{{ standard.name }}</strong><small class="table-subtext">{{ standard.arn }}</small></td><td>{% for region, status in standard.region_statuses.items() %}{{ region }} · {{ status }}{% if not loop.last %}<br>{% endif %}{% else %}Not enabled in scanned regions{% endfor %}</td><td>{{ standard.available_regions|join(', ') }}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+  {% else %}
+  <p class="empty-state">No standards were returned. Security Hub may be disabled, unavailable, or not accessible to the audit identity in the scanned regions.</p>
+  {% endif %}
+  <div class="table-wrap"><table><thead><tr><th>Region</th><th>Security Hub</th><th>Collection notes</th></tr></thead><tbody>
+  {% for region in audit.securityhub.regions %}
+  <tr><td>{{ region.region }}</td><td>{% if region.enabled %}<span class="status pass">Enabled</span>{% elif region.enabled == false %}<span class="status fail">Disabled</span>{% else %}<span class="status unknown">Unknown</span>{% endif %}</td><td>{% if region.error %}Hub: {{ region.error }}{% endif %}{% if region.standards_error %} Standards: {{ region.standards_error }}{% endif %}{% if region.findings_error %} Findings: {{ region.findings_error }}{% endif %}{% if not (region.error or region.standards_error or region.findings_error) %}—{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">DETERMINISTIC CHECKS</p><h2>Built-in control findings</h2></div></div>
+  {% for finding in audit.findings %}
+  <article class="finding">
+    <div class="finding-head"><div><span class="control">{{ finding.control_id }} · {{ finding.severity }}</span><h3>{{ finding.title }}</h3></div><span class="status {{ finding.status|lower }}">{{ finding.status|replace('_',' ') }}</span></div>
+    <p>{{ finding.description }}</p>
+    <p class="meta"><strong>Service:</strong> {{ finding.service }} · <strong>Resource:</strong> {{ finding.resource_id }}{% if finding.region %} · <strong>Region:</strong> {{ finding.region }}{% endif %} · <strong>Confidence:</strong> {{ finding.confidence }}</p>
+    {% if finding.remediation %}<p><strong>Suggested action:</strong> {{ finding.remediation }}</p>{% endif %}
+    {% if finding.frameworks %}<p class="meta"><strong>Framework references:</strong> {{ finding.frameworks|join(', ') }}</p>{% endif %}
+    {% if finding.evidence %}<details><summary>Evidence ({{ finding.evidence|length }})</summary><pre>{{ finding.evidence|tojson(indent=2) }}</pre></details>{% endif %}
+  </article>
+  {% else %}<p class="empty-state">No built-in controls were evaluated.</p>{% endfor %}
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">SECURITY HUB</p><h2>Active findings</h2></div></div>
+  <p class="muted">Findings are read from Security Hub in the scanned regions. Only findings whose workflow state is not Resolved or Suppressed are included in this table and charts.</p>
+  {% if audit.securityhub.findings %}
+  <label class="search-label" for="finding-search">Filter findings</label><input id="finding-search" type="search" placeholder="Search title, resource, standard, region, or severity">
+  <div class="table-wrap"><table id="security-findings"><thead><tr><th>Severity</th><th>Finding / control</th><th>Compliance</th><th>Resource</th><th>Region</th><th>Workflow</th><th>Recommendation</th></tr></thead><tbody>
+  {% for finding in audit.securityhub.findings %}
+  {% if finding.is_open %}
+  <tr>
+    <td><span class="severity-pill severity-{{ (finding.severity or 'UNKNOWN')|lower }}">{{ finding.severity or 'Unknown' }}</span></td>
+    <td><strong>{{ finding.title or 'Untitled finding' }}</strong><small class="table-subtext">{{ finding.product_name or 'Security Hub' }} · {{ finding.generator_id or finding.id }}</small></td>
+    <td>{{ finding.compliance_status or 'Unknown' }}</td>
+    <td>{% for resource in finding.resources %}<span class="resource-name">{{ resource.name or resource.id }}</span>{% if not loop.last %}<br>{% endif %}{% else %}—{% endfor %}</td>
+    <td>{{ finding.region or '—' }}</td>
+    <td>{{ finding.workflow_status or 'NEW' }}</td>
+    <td>{{ finding.remediation.get('Text','') }}</td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  </tbody></table></div>
+  {% else %}<p class="empty-state">No active Security Hub findings were collected. This does not prove that the account is free of security issues; confirm that Security Hub is enabled, standards are active, and collection permissions are sufficient.</p>{% endif %}
+</section>
+
+<section class="panel">
+  <div class="section-heading"><div><p class="section-kicker">METHODOLOGY AND LIMITATIONS</p><h2>Read before relying on this report</h2></div></div>
+  <ul class="limitations">
+    <li>Security Hub standards are listed per region as returned by AWS. The scanner does not silently enable or modify standards during an audit.</li>
+    <li>The built-in score is PASS ÷ (PASS + FAIL) for this application's checks. UNKNOWN and NOT APPLICABLE are excluded; this may not be compared directly to AWS Security Hub's score.</li>
+    <li>Coverage depends on enabled regions, configured Security Hub standards, IAM permissions, service APIs, and implemented collectors. Missing data is not evidence of compliance.</li>
+    <li>Framework labels are references, not proof of certification. Validate benchmark versions, exceptions, and business context with your security team.</li>
+    <li>Review all collection errors and unknown results. This report is not a penetration test, legal opinion, or substitute for production security review.</li>
+  </ul>
+</section>
+<footer>Confidential infrastructure information. Share only through an approved secure channel. Generated by {{ audit.application_name or 'AWS Account Audit Agent' }}.</footer>
+</main>
+<script>
+const search = document.getElementById('finding-search');
+if (search) {
+  search.addEventListener('input', () => {
+    const query = search.value.toLowerCase();
+    document.querySelectorAll('#security-findings tbody tr').forEach(row => {
+      row.hidden = !row.textContent.toLowerCase().includes(query);
+    });
+  });
+}
+</script>
+</body>
+</html>

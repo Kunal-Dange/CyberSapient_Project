@@ -1,0 +1,88 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ app_name }}</title><link rel="stylesheet" href="/static/style.css"></head>
+<body><main class="container">
+<header><div><p class="eyebrow">CLOUD SECURITY · COMPLIANCE · GOVERNANCE</p><h1>{{ app_name }}</h1><p class="muted">Discover supported AWS resources, evaluate controls and generate evidence-backed audit reports.</p></div><span class="pill">READ-ONLY AUDITS</span></header>
+<section class="panel"><h2>Start an account audit</h2><p class="muted">The scanner uses the AWS identity configured on the application host. Leave regions blank to discover and scan all enabled regions.</p>
+<label for="regions">Regions (comma-separated; leave blank to scan enabled regions)</label><input id="regions" placeholder="ap-south-1, ap-southeast-1">
+<button onclick="startAudit()">Run AWS audit</button><p id="message" class="muted"></p></section>
+<section class="panel"><h2>Security Hub standards</h2>
+<p class="muted">View standards available in a region. Activating Security Hub or a standard changes AWS account configuration and may incur AWS charges. Each action is separate, explicit, and requires the server-side SECURITY_HUB_ADMIN_TOKEN setting; review current AWS pricing first.</p>
+<label for="standard-region">AWS region</label><div class="inline-form"><input id="standard-region" placeholder="ap-south-1"><button onclick="loadStandards()">Load standards</button></div>
+<button onclick="enableSecurityHub()">Enable Security Hub in this region</button>
+<div id="standards-list" class="standards-list"><p class="muted">Load a region to see available and enabled standards.</p></div>
+<label for="admin-token">Admin token (not stored)</label><input id="admin-token" type="password" autocomplete="off" placeholder="Required only to enable selected standards">
+<button id="enable-standards-button" onclick="enableStandards()" disabled>Enable selected standards in this region</button>
+<p id="standards-message" class="muted" aria-live="polite"></p>
+</section>
+<section class="panel"><h2>Recent audit reports</h2><div id="audits">
+{% for a in audits %}<div class="audit-row"><div><strong>{{ a.audit_id }}</strong><small>{{ a.created_at }} · {{ a.status }}</small></div><a href="/reports/{{ a.audit_id }}">Open report →</a></div>{% else %}<p class="muted">No audits yet. Start your first scan above.</p>{% endfor %}
+</div></section>
+<footer>Use behind company SSO / an authenticated internal load balancer before sharing with a team.</footer>
+</main><script>
+async function startAudit(){
+ const msg=document.getElementById('message'); msg.textContent='Starting scan…';
+ const raw=document.getElementById('regions').value.trim();
+ const regions=raw ? raw.split(',').map(x=>x.trim()).filter(Boolean) : null;
+ try { const r=await fetch('/api/audits',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({regions})});
+ const d=await r.json(); if(!r.ok) throw new Error(d.detail||'Request failed');
+ msg.textContent='Audit accepted. Refresh this page in a moment; the report will appear in history.';
+ setTimeout(()=>location.reload(),5000);
+ } catch(e){msg.textContent='Could not start audit: '+e.message;}
+}
+async function loadStandards(){
+ const region=document.getElementById('standard-region').value.trim();
+ const list=document.getElementById('standards-list');
+ const msg=document.getElementById('standards-message');
+ const button=document.getElementById('enable-standards-button');
+ list.replaceChildren(); button.disabled=true; msg.textContent='Loading available standards…';
+ if(!region){msg.textContent='Enter a region first.';return;}
+ try {
+  const response=await fetch('/api/securityhub/standards?region='+encodeURIComponent(region));
+  const data=await response.json(); if(!response.ok) throw new Error(data.detail||'Could not load standards.');
+  if(!data.standards.length){list.textContent='No standards were returned for this region.';msg.textContent='';return;}
+  data.standards.forEach(standard=>{
+   const row=document.createElement('label'); row.className='standard-option';
+   const checkbox=document.createElement('input'); checkbox.type='checkbox'; checkbox.value=standard.standards_arn;
+   checkbox.disabled=standard.enabled;
+   const detail=document.createElement('span');
+   const name=document.createElement('strong'); name.textContent=standard.name;
+   const description=document.createElement('small'); description.textContent=standard.description||standard.standards_arn;
+   const state=document.createElement('em'); state.textContent=standard.enabled?'Enabled':'Available';
+   detail.append(name,description,state); row.append(checkbox,detail); list.append(row);
+  });
+  button.disabled=false; msg.textContent='Standards loaded. Select only the standards you intend to activate.';
+ } catch(error){msg.textContent='Could not load standards: '+error.message;}
+}
+async function enableSecurityHub(){
+ const region=document.getElementById('standard-region').value.trim();
+ const msg=document.getElementById('standards-message');
+ if(!region){msg.textContent='Enter a region first.';return;}
+ if(!window.confirm('Enable Security Hub in '+region+'? This changes AWS configuration and may incur AWS charges.')) return;
+ msg.textContent='Submitting Security Hub activation…';
+ try {
+  const response=await fetch('/api/securityhub/enable',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':document.getElementById('admin-token').value},body:JSON.stringify({region})});
+  const data=await response.json(); if(!response.ok) throw new Error(data.detail||'Activation request failed.');
+  msg.textContent=data.status==='ALREADY_ENABLED'?'Security Hub is already enabled.':'Security Hub activation requested. Load standards again after AWS completes setup.';
+  if(data.status==='ALREADY_ENABLED') await loadStandards();
+ } catch(error){msg.textContent='Could not enable Security Hub: '+error.message;}
+}
+async function enableStandards(){
+ const region=document.getElementById('standard-region').value.trim();
+ const selected=[...document.querySelectorAll('#standards-list input[type=checkbox]:checked')].map(input=>input.value);
+ const msg=document.getElementById('standards-message');
+ if(!selected.length){msg.textContent='Select at least one standard.';return;}
+ if(!window.confirm('Enable '+selected.length+' selected Security Hub standard(s) in '+region+'? This changes AWS configuration and may incur AWS charges.')) return;
+ const token=document.getElementById('admin-token').value;
+ msg.textContent='Submitting standard activation…';
+ try {
+  const response=await fetch('/api/securityhub/standards/enable',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':token},body:JSON.stringify({regions:[region],standards_arns:selected})});
+  const data=await response.json(); if(!response.ok&&response.status!==207) throw new Error(data.detail||'Activation request failed.');
+  const outcome=data.regions&&data.regions[0];
+  if(outcome&&outcome.status==='ERROR') throw new Error('AWS rejected activation: '+outcome.error);
+  if(outcome&&outcome.status==='PARTIAL') throw new Error('AWS returned partial activation errors. Review the result and retry only standards that remain disabled.');
+  msg.textContent='Activation requested. AWS may need time to finish; refresh the standards list to verify status.';
+  await loadStandards();
+ } catch(error){msg.textContent='Could not enable standards: '+error.message;}
+}
+</script></body></html>
